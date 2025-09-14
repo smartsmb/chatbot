@@ -1,0 +1,17 @@
+# k8s/config-backend.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chatbot-backend-config
+  namespace: chatbot
+  labels:
+    app: chatbot-backend
+data:
+  # Production database configuration
+  # Replace with your RDS PostgreSQL instance details
+  DATABASE_URL: "postgresql+psycopg2://username:password@your-rds-endpoint.region.rds.amazonaws.com:5432/chatbot"
+  # Update with your actual domain
+  CORS_ORIGINS: "https://your-domain.com,https://www.your-domain.com"
+  # Additional environment variables
+  ENVIRONMENT: "production"
+  LOG_LEVEL: "INFO"

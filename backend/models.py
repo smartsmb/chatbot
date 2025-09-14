@@ -58,3 +58,6 @@ class ChatResponse(BaseModel):
     message: str
     conversation_id: int
     message_id: int
+
+
+

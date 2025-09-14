@@ -23,3 +23,6 @@ class OpenAIClient:
             return f"Sorry, I encountered an error: {str(e)}"
 
 openai_client = OpenAIClient()
+
+
+

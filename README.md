@@ -50,7 +50,7 @@ cp backend/env.example backend/.env
 cp frontend/env.example frontend/.env
 
 # Edit backend/.env and add your secrets:
-# OPENAI_API_KEY=your_openai_api_key_here
+# OPENAI_API_KEY=<your_openai_api_key>
 # JWT_SECRET=your_jwt_secret_here_change_this_in_production
 ```
 
@@ -58,7 +58,7 @@ cp frontend/env.example frontend/.env
 
 ```bash
 # Set environment variables and start services
-OPENAI_API_KEY=sk-... JWT_SECRET=change-me docker-compose up --build
+OPENAI_API_KEY=<your_openai_api_key> JWT_SECRET=change-me docker-compose up --build
 ```
 
 ### 4. Access the Application
@@ -172,6 +172,3 @@ The application uses SQLite for development. The database file (`chatbot.db`) wi
 ## License
 
 This project is licensed under the MIT License.
-
-
-

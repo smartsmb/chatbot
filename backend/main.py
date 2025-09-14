@@ -5,17 +5,16 @@ from database import get_db, create_tables, User, Conversation, Message
 from auth import get_password_hash, verify_password, create_access_token, get_current_user
 from models import UserCreate, UserResponse, UserLogin, Token, ChatRequest, ChatResponse, ConversationResponse, MessageResponse
 from openai_client import openai_client
+from settings import settings
 from datetime import timedelta
 import asyncio
 
-app = FastAPI(title="Chatbot API", version="1.0.0")
+app = FastAPI(title=settings.APP_NAME, version=settings.APP_VERSION)
 
-# CORS middleware
+# CORS middleware with settings-driven configuration
 app.add_middleware(
     CORSMiddleware,
-    # allow_origins=["http://localhost:5173", "http://localhost:3000"],
-    allow_origins=["*"],            # Starlette will echo back request origin
-    allow_origin_regex=".*", 
+    allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -57,7 +56,7 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    access_token_expires = timedelta(minutes=30)
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": db_user.username}, expires_delta=access_token_expires
     )
@@ -155,9 +154,33 @@ async def chat(request: ChatRequest, current_user: User = Depends(get_current_us
 async def root():
     return {"message": "Chatbot API is running!"}
 
+@app.get("/health")
+async def health_check():
+    """Health check endpoint with configuration validation."""
+    issues = settings.validate_config()
+    return {
+        "status": "healthy" if not issues else "unhealthy",
+        "environment": settings.ENVIRONMENT,
+        "database": "SQLite" if settings.is_sqlite else "PostgreSQL",
+        "issues": issues
+    }
+
+@app.get("/config")
+async def get_config():
+    """Get current configuration (excluding sensitive data)."""
+    return {
+        "environment": settings.ENVIRONMENT,
+        "database_type": "SQLite" if settings.is_sqlite else "PostgreSQL",
+        "debug": settings.DEBUG,
+        "log_level": settings.LOG_LEVEL,
+        "cors_origins": settings.CORS_ORIGINS,
+        "openai_model": settings.OPENAI_MODEL,
+        "token_expire_minutes": settings.ACCESS_TOKEN_EXPIRE_MINUTES
+    }
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host=settings.HOST, port=settings.PORT)
 
 
 

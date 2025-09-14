@@ -42,16 +42,60 @@ spec:
                 secretKeyRef:
                   name: chatbot-backend-secrets
                   key: JWT_SECRET
+            # Environment-driven database configuration
+            # Priority: 1. Environment variable, 2. ConfigMap, 3. Default SQLite
             - name: DATABASE_URL
               valueFrom:
                 configMapKeyRef:
                   name: chatbot-backend-config
                   key: DATABASE_URL
+                  optional: true
             - name: CORS_ORIGINS
               valueFrom:
                 configMapKeyRef:
                   name: chatbot-backend-config
                   key: CORS_ORIGINS
+            - name: ENVIRONMENT
+              valueFrom:
+                configMapKeyRef:
+                  name: chatbot-backend-config
+                  key: ENVIRONMENT
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: chatbot-backend-config
+                  key: LOG_LEVEL
+            # Database connection details (for PostgreSQL)
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: chatbot-backend-config
+                  key: DB_HOST
+                  optional: true
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: chatbot-backend-config
+                  key: DB_PORT
+                  optional: true
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: chatbot-backend-config
+                  key: DB_NAME
+                  optional: true
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: chatbot-backend-secrets
+                  key: DB_USERNAME
+                  optional: true
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: chatbot-backend-secrets
+                  key: DB_PASSWORD
+                  optional: true
           resources:
             requests:
               memory: "256Mi"

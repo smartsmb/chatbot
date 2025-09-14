@@ -6,3 +6,4 @@ metadata:
   labels:
     name: chatbot
     environment: production
+

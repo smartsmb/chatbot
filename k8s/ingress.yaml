@@ -50,3 +50,4 @@ spec:
         - www.your-domain.com
       # Replace with your actual certificate ARN
       secretName: chatbot-tls-secret
+

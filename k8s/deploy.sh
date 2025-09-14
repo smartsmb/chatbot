@@ -15,8 +15,10 @@ NAMESPACE="chatbot"
 REGION="${AWS_REGION:-us-west-2}"
 ACCOUNT_ID="${AWS_ACCOUNT_ID}"
 CLUSTER_NAME="${EKS_CLUSTER_NAME:-chatbot-cluster}"
+ENVIRONMENT="${ENVIRONMENT:-development}"  # development, staging, production
 
 echo -e "${GREEN}Starting EKS deployment for Chatbot Application${NC}"
+echo -e "${YELLOW}Environment: $ENVIRONMENT${NC}"
 
 # Check if required environment variables are set
 if [ -z "$ACCOUNT_ID" ]; then
@@ -54,11 +56,31 @@ read -p "Press Enter to continue after updating secrets..."
 
 kubectl apply -f secret-backend.yaml
 
-# Create config map
-echo -e "${YELLOW}Creating config map...${NC}"
-echo -e "${RED}IMPORTANT: Update config-backend.yaml with your actual configuration before proceeding!${NC}"
-read -p "Press Enter to continue after updating configuration..."
+# Create config map based on environment
+echo -e "${YELLOW}Creating config map for $ENVIRONMENT environment...${NC}"
 
+if [ "$ENVIRONMENT" = "production" ]; then
+    echo -e "${YELLOW}Using production configuration (PostgreSQL/RDS)${NC}"
+    echo -e "${RED}IMPORTANT: Update config-backend-prod.yaml with your actual RDS configuration!${NC}"
+    read -p "Press Enter to continue after updating production configuration..."
+    kubectl apply -f config-backend-prod.yaml
+    # Update the deployment to use production config
+    kubectl patch deployment chatbot-backend -n $NAMESPACE -p '{"spec":{"template":{"spec":{"containers":[{"name":"api","env":[{"name":"DATABASE_URL","valueFrom":{"configMapKeyRef":{"name":"chatbot-backend-config-prod","key":"DATABASE_URL"}}}]}]}}}}'
+elif [ "$ENVIRONMENT" = "staging" ]; then
+    echo -e "${YELLOW}Using staging configuration (PostgreSQL)${NC}"
+    echo -e "${RED}IMPORTANT: Update config-backend-prod.yaml with your staging database configuration!${NC}"
+    read -p "Press Enter to continue after updating staging configuration..."
+    kubectl apply -f config-backend-prod.yaml
+    # Update the deployment to use staging config
+    kubectl patch deployment chatbot-backend -n $NAMESPACE -p '{"spec":{"template":{"spec":{"containers":[{"name":"api","env":[{"name":"DATABASE_URL","valueFrom":{"configMapKeyRef":{"name":"chatbot-backend-config-prod","key":"DATABASE_URL"}}}]}]}}}}'
+else
+    echo -e "${YELLOW}Using development configuration (SQLite - safe default)${NC}"
+    kubectl apply -f config-backend-dev.yaml
+    # Update the deployment to use dev config
+    kubectl patch deployment chatbot-backend -n $NAMESPACE -p '{"spec":{"template":{"spec":{"containers":[{"name":"api","env":[{"name":"DATABASE_URL","valueFrom":{"configMapKeyRef":{"name":"chatbot-backend-config-dev","key":"DATABASE_URL"}}}]}]}}}}'
+fi
+
+# Apply the base config as fallback
 kubectl apply -f config-backend.yaml
 
 # Deploy backend
@@ -112,3 +134,4 @@ echo "1. Update your DNS to point to the ALB endpoint"
 echo "2. Verify SSL certificate is properly configured"
 echo "3. Test the application endpoints"
 echo "4. Monitor logs: kubectl logs -f deployment/chatbot-backend -n $NAMESPACE"
+

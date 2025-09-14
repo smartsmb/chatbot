@@ -7,11 +7,19 @@ metadata:
   labels:
     app: chatbot-backend
 data:
-  # Production database configuration
-  # Replace with your RDS PostgreSQL instance details
-  DATABASE_URL: "postgresql+psycopg2://username:password@your-rds-endpoint.region.rds.amazonaws.com:5432/chatbot"
-  # Update with your actual domain
-  CORS_ORIGINS: "https://your-domain.com,https://www.your-domain.com"
-  # Additional environment variables
+  # Environment-driven database configuration
+  # Default: SQLite for local/dev (safe default)
+  # Override in K8s: PostgreSQL/RDS for production
+  DATABASE_URL: "sqlite:///./chatbot.db"
+
+  # CORS origins - update with your actual domain
+  CORS_ORIGINS: "https://your-domain.com,https://www.your-domain.com,http://localhost:5173"
+
+  # Environment configuration
   ENVIRONMENT: "production"
   LOG_LEVEL: "INFO"
+
+  # Database configuration hints
+  DB_HOST: "localhost"
+  DB_PORT: "5432"
+  DB_NAME: "chatbot"

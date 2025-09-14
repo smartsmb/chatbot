@@ -10,6 +10,40 @@ This directory contains Kubernetes manifests for deploying the chatbot applicati
 4. **Docker Images**: Built and pushed to ECR
 5. **RDS Database**: PostgreSQL database for production (optional, can use SQLite for testing)
 
+## Environment-Driven Configuration
+
+This deployment uses environment-driven configuration with safe defaults:
+
+### **Default Behavior (No Environment Set)**
+
+- **Database**: SQLite (safe default for local/dev)
+- **CORS**: Includes localhost for development
+- **Logging**: DEBUG level
+- **Resources**: Minimal for development
+
+### **Environment-Specific Configurations**
+
+#### Development (`ENVIRONMENT=development`)
+
+- **Database**: SQLite (`sqlite:///./chatbot.db`)
+- **CORS**: `http://localhost:5173,http://localhost:3000,http://localhost:8080`
+- **Logging**: DEBUG level
+- **File**: `config-backend-dev.yaml`
+
+#### Production (`ENVIRONMENT=production`)
+
+- **Database**: PostgreSQL/RDS (requires configuration)
+- **CORS**: Production domains only
+- **Logging**: WARNING level
+- **File**: `config-backend-prod.yaml`
+
+### **Configuration Priority**
+
+1. **Environment Variables** (highest priority)
+2. **Environment-specific ConfigMap** (e.g., `config-backend-prod.yaml`)
+3. **Base ConfigMap** (`config-backend.yaml`)
+4. **Application Defaults** (SQLite fallback)
+
 ## Required AWS Resources
 
 - EKS Cluster
@@ -62,15 +96,32 @@ Update `ingress.yaml` with:
 
 ## Deployment
 
-### Quick Deployment
+### Environment-Specific Deployment Scripts
+
+#### Development (SQLite - Safe Default)
+
+```bash
+# Quick development deployment with SQLite
+./deploy-dev.sh
+```
+
+#### Production (PostgreSQL/RDS)
+
+```bash
+# Production deployment with PostgreSQL/RDS
+./deploy-prod.sh
+```
+
+#### Environment-Aware Deployment
 
 ```bash
 # Set required environment variables
 export AWS_ACCOUNT_ID="123456789012"
 export AWS_REGION="us-west-2"
 export EKS_CLUSTER_NAME="your-cluster-name"
+export ENVIRONMENT="production"  # or "development", "staging"
 
-# Run the deployment script
+# Run the environment-aware deployment script
 ./deploy.sh
 ```
 

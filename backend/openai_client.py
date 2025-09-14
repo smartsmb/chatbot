@@ -1,22 +1,20 @@
 import openai
-import os
-from dotenv import load_dotenv
+from settings import settings
 
-load_dotenv()
-
-openai.api_key = os.getenv("OPENAI_API_KEY")
+# Set OpenAI API key from settings
+openai.api_key = settings.OPENAI_API_KEY
 
 class OpenAIClient:
     def __init__(self):
-        self.client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        self.client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
     
     async def generate_response(self, messages: list) -> str:
         try:
             response = self.client.chat.completions.create(
-                model="gpt-3.5-turbo",
+                model=settings.OPENAI_MODEL,
                 messages=messages,
-                max_tokens=1000,
-                temperature=0.7
+                max_tokens=settings.OPENAI_MAX_TOKENS,
+                temperature=settings.OPENAI_TEMPERATURE
             )
             return response.choices[0].message.content
         except Exception as e:

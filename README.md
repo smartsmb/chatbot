@@ -172,3 +172,4 @@ The application uses SQLite for development. The database file (`chatbot.db`) wi
 ## License
 
 This project is licensed under the MIT License.
+

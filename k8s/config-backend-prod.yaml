@@ -1,0 +1,31 @@
+# k8s/config-backend-prod.yaml
+# Production ConfigMap - overrides default SQLite with PostgreSQL/RDS
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chatbot-backend-config-prod
+  namespace: chatbot
+  labels:
+    app: chatbot-backend
+    environment: production
+data:
+  # Production database configuration
+  # Replace with your actual RDS PostgreSQL instance details
+  DATABASE_URL: "postgresql+psycopg2://username:password@your-rds-endpoint.region.rds.amazonaws.com:5432/chatbot"
+
+  # Production CORS origins
+  CORS_ORIGINS: "https://your-domain.com,https://www.your-domain.com"
+
+  # Production environment settings
+  ENVIRONMENT: "production"
+  LOG_LEVEL: "WARNING"
+
+  # Database configuration
+  DB_HOST: "your-rds-endpoint.region.rds.amazonaws.com"
+  DB_PORT: "5432"
+  DB_NAME: "chatbot"
+
+  # Additional production settings
+  WORKERS: "4"
+  MAX_CONNECTIONS: "20"
+  POOL_TIMEOUT: "30"

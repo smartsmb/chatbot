@@ -51,3 +51,9 @@ build/
 *.pem
 *.key
 k8s/*secret*.yaml
+.env
+*.env*
+.env.local
+*.pem
+*.key
+k8s/*secret*.yaml

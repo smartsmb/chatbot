@@ -1,12 +1,11 @@
-# k8s/deployment-backend.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: chatbot-backend
-  namespace: chatbot
   labels:
     app: chatbot-backend
-    version: v1
+    app.kubernetes.io/name: chatbot-backend
+    app.kubernetes.io/version: "1.0.0"
 spec:
   replicas: 2
   selector:
@@ -16,7 +15,8 @@ spec:
     metadata:
       labels:
         app: chatbot-backend
-        version: v1
+        app.kubernetes.io/name: chatbot-backend
+        app.kubernetes.io/version: "1.0.0"
     spec:
       serviceAccountName: chatbot-backend-sa
       securityContext:
@@ -42,14 +42,11 @@ spec:
                 secretKeyRef:
                   name: chatbot-backend-secrets
                   key: JWT_SECRET
-            # Environment-driven database configuration
-            # Priority: 1. Environment variable, 2. ConfigMap, 3. Default SQLite
             - name: DATABASE_URL
               valueFrom:
                 configMapKeyRef:
                   name: chatbot-backend-config
                   key: DATABASE_URL
-                  optional: true
             - name: CORS_ORIGINS
               valueFrom:
                 configMapKeyRef:
@@ -65,7 +62,6 @@ spec:
                 configMapKeyRef:
                   name: chatbot-backend-config
                   key: LOG_LEVEL
-            # Database connection details (for PostgreSQL)
             - name: DB_HOST
               valueFrom:
                 configMapKeyRef:
@@ -105,7 +101,7 @@ spec:
               cpu: "500m"
           readinessProbe:
             httpGet:
-              path: /docs
+              path: /health
               port: 8000
             initialDelaySeconds: 10
             periodSeconds: 10
@@ -114,7 +110,7 @@ spec:
             failureThreshold: 3
           livenessProbe:
             httpGet:
-              path: /docs
+              path: /health
               port: 8000
             initialDelaySeconds: 30
             periodSeconds: 30

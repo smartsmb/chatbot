@@ -1,9 +1,8 @@
-# k8s/namespace.yaml
 apiVersion: v1
 kind: Namespace
 metadata:
   name: chatbot
   labels:
     name: chatbot
-    environment: production
-
+    app.kubernetes.io/name: chatbot
+    app.kubernetes.io/version: "1.0.0"

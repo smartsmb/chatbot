@@ -1,11 +1,11 @@
-# k8s/service-frontend.yaml
 apiVersion: v1
 kind: Service
 metadata:
   name: chatbot-frontend-svc
-  namespace: chatbot
   labels:
     app: chatbot-frontend
+    app.kubernetes.io/name: chatbot-frontend
+    app.kubernetes.io/version: "1.0.0"
 spec:
   type: ClusterIP
   selector:
@@ -16,4 +16,3 @@ spec:
       targetPort: 80
       protocol: TCP
   sessionAffinity: None
-

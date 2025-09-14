@@ -1,0 +1,41 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: chatbot-dev
+
+namespace: chatbot-dev
+
+resources:
+  - ../../base
+
+patchesStrategicMerge:
+  - patch-backend.yaml
+
+configMapGenerator:
+  - name: chatbot-backend-config
+    envs:
+      - config-backend.env
+    options:
+      disableNameSuffixHash: true
+
+secretGenerator:
+  - name: chatbot-backend-secrets
+    envs:
+      - secret-backend.env
+    options:
+      disableNameSuffixHash: true
+
+patchesJson6902:
+  - target:
+      group: networking.k8s.io
+      version: v1
+      kind: Ingress
+      name: chatbot-ingress
+    path: patch-ingress-hosts.yaml
+
+images:
+  - name: "<ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/chatbot-backend"
+    newTag: "dev"
+  - name: "<ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/chatbot-frontend"
+    newTag: "dev"

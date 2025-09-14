@@ -50,11 +50,10 @@ build/
 .env.development
 *.pem
 *.key
-k8s/*secret*.yaml
+k8s/01-secrets-backend.yaml
 .env
 *.env*
 .env.local
 *.pem
 *.key
-k8s/*secret*.yaml
 frontend/node_modules

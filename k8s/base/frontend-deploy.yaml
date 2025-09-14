@@ -1,12 +1,11 @@
-# k8s/deployment-frontend.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: chatbot-frontend
-  namespace: chatbot
   labels:
     app: chatbot-frontend
-    version: v1
+    app.kubernetes.io/name: chatbot-frontend
+    app.kubernetes.io/version: "1.0.0"
 spec:
   replicas: 2
   selector:
@@ -16,7 +15,8 @@ spec:
     metadata:
       labels:
         app: chatbot-frontend
-        version: v1
+        app.kubernetes.io/name: chatbot-frontend
+        app.kubernetes.io/version: "1.0.0"
     spec:
       serviceAccountName: chatbot-frontend-sa
       securityContext:

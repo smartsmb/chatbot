@@ -57,3 +57,4 @@ k8s/*secret*.yaml
 *.pem
 *.key
 k8s/*secret*.yaml
+frontend/node_modules

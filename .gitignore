@@ -44,4 +44,10 @@ build/
 
 # Docker
 .dockerignore
-.venv
+.venv.env
+*.env*
+.env.local
+.env.development
+*.pem
+*.key
+k8s/*secret*.yaml
